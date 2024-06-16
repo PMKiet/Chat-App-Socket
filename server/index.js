@@ -2,8 +2,10 @@ import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
-import userRouter from './router/auth.router.js'
+import authRouter from './router/auth.router.js'
+import userRouter from './router/user.router.js'
 import bodyParser from 'body-parser'
+import cookieParser from 'cookie-parser'
 
 dotenv.config()
 
@@ -19,11 +21,14 @@ const app = express()
 
 
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser())
 
 // parse application/json
 app.use(bodyParser.json())
-app.use('/api/auth/', userRouter)
+app.use('/api/auth/', authRouter)
+app.use('/api/user/', userRouter)
 
 const PORT = process.env.PORT || 8000
 
