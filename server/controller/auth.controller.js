@@ -36,10 +36,11 @@ export const registerUser = async (req, res, next) => {
             password: hashPassword
         })
 
+        const { password: pass, ...rest } = newUser._doc
         await newUser.save()
         res.status(201).json({
             message: 'Register success',
-            data: newUser
+            data: rest
         })
     } catch (error) {
         next(error)
