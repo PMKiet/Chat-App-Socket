@@ -19,15 +19,15 @@ mongoose.connect(process.env.MONGODB)
 
 const app = express()
 
-
+app.use(cors())
 // parse application/x-www-form-urlencoded
 app.use(express.json())
+app.use(bodyParser.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 
 // parse application/json
-app.use(bodyParser.json())
-app.use('/api/auth/', authRouter)
+app.use('/api/auth', authRouter)
 app.use('/api/user/', userRouter)
 
 const PORT = process.env.PORT || 8000

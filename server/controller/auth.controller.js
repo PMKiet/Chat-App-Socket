@@ -4,11 +4,9 @@ import { errorHandler } from '../utils/errorHandler.js'
 import jwt from 'jsonwebtoken'
 
 export const registerUser = async (req, res, next) => {
+    console.log(req)
+    const { username, email, password, profilePicture } = req.body
     try {
-        const { username, email, password } = req.body
-
-        console.log('username', username)
-        console.log('email', email)
 
         //check fields input
         if (!username || !email || !password || username === '' || email === '' || password === '') {
@@ -33,7 +31,8 @@ export const registerUser = async (req, res, next) => {
         const newUser = new User({
             username,
             email,
-            password: hashPassword
+            password: hashPassword,
+            profilePicture
         })
 
         const { password: pass, ...rest } = newUser._doc

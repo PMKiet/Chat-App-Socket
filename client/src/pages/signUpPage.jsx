@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { app } from '../firebase.js'
+import { toast } from 'react-toastify'
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage'
 
 export default function RegisterPage() {
@@ -9,6 +10,7 @@ export default function RegisterPage() {
     const [imageFileUrl, setImageFileUrl] = useState(null)
     const [imageFileIpLoadProgress, setImageFileIpLoadProgress] = useState(null)
     const [imageFileUpLoadError, setImageFileUpLoadError] = useState(null)
+    console.log(formData);
     const handleOnchange = (e) => {
         setFormData({ ...formData, [e.target.id]: e.target.value.trim() })
     }
@@ -26,8 +28,27 @@ export default function RegisterPage() {
         }
     }, [imageFile])
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
+        console.log('formData', formData.username)
+
+        if (!formData.username || !formData.email || !formData.password) {
+            return toast.warning('Please fill out all fields')
+        }
+        try {
+            const res = await fetch('/api/auth/signUp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+            const data = await res.json()
+
+            // if (res.ok) {
+            //     navigate('/sign-in')
+            // }
+        } catch (error) {
+            console.error(error)
+        }
     }
 
     const uploadImage = async () => {
@@ -56,7 +77,6 @@ export default function RegisterPage() {
             }
         )
     }
-    console.log('formData', formData)
     return (
         <div className='mt-5'>
 
@@ -88,10 +108,10 @@ export default function RegisterPage() {
                         />
                     </div>
                     <div className='flex flex-col gap-1'>
-                        <label htmlFor="name">Name:</label>
+                        <label htmlFor="username">Name:</label>
                         <input
                             type='text'
-                            id='name'
+                            id='username'
                             placeholder='Enter your name'
                             className='bg-slate-100 px-2 py-1 focus:outline-primary'
                             onChange={(e) => handleOnchange(e)}
