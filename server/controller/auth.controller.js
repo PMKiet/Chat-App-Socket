@@ -4,7 +4,6 @@ import { errorHandler } from '../utils/errorHandler.js'
 import jwt from 'jsonwebtoken'
 
 export const registerUser = async (req, res, next) => {
-    console.log(req)
     const { username, email, password, profilePicture } = req.body
     try {
 
@@ -16,13 +15,13 @@ export const registerUser = async (req, res, next) => {
         //check Username exits
         const checkUsername = await User.findOne({ username })
         if (checkUsername) {
-            return next(errorHandler(404, 'Already name exits'))
+            return next(errorHandler(400, 'Already name exits'))
         }
 
         //check email exits
         const checkEmail = await User.findOne({ email })
         if (checkEmail) {
-            return next(errorHandler(404, 'Already email exits'))
+            return next(errorHandler(400, 'Already email exits'))
         }
 
         //hash password
@@ -54,7 +53,7 @@ export const login = async (req, res, next) => {
     try {
         const validUser = await User.findOne({ email })
         if (!validUser) {
-            return next(errorHandler(404, 'User not found!'))
+            return next(errorHandler(400, 'User not found!'))
         }
         const validPassword = bcryptjs.compareSync(password, validUser.password)
         if (!validPassword) {

@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { app } from '../firebase.js'
 import { toast } from 'react-toastify'
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage'
 
 export default function RegisterPage() {
+    const navigate = useNavigate()
     const [formData, setFormData] = useState({})
     const [imageFile, setImageFile] = useState(null)
     const [imageFileUrl, setImageFileUrl] = useState(null)
+    const [avatarLoading, setAvatarLoading] = useState(false)
     const [imageFileIpLoadProgress, setImageFileIpLoadProgress] = useState(null)
     const [imageFileUpLoadError, setImageFileUpLoadError] = useState(null)
     console.log(formData);
@@ -43,10 +45,11 @@ export default function RegisterPage() {
             })
             const data = await res.json()
 
-            // if (res.ok) {
-            //     navigate('/sign-in')
-            // }
+            if (res.ok) {
+                navigate('/sign_in')
+            }
         } catch (error) {
+            toast.warning(error.message)
             console.error(error)
         }
     }
@@ -54,11 +57,12 @@ export default function RegisterPage() {
     const uploadImage = async () => {
         const storage = getStorage(app)
         const fileName = new Date().getTime() + imageFile.name
-        const storeRef = ref(storage, fileName)
+        const storeRef = ref(storage, `image/${fileName}`)
         const uploadTask = uploadBytesResumable(storeRef, imageFile)
         uploadTask.on(
             'state_changed',
             (snapshot) => {
+                setAvatarLoading(true)
                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
                 setImageFileIpLoadProgress(progress.toFixed(0))
             },
@@ -73,6 +77,7 @@ export default function RegisterPage() {
                 getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                     setImageFileUrl(downloadURL)
                     setFormData({ ...formData, profilePicture: downloadURL })
+                    setAvatarLoading(false)
                 })
             }
         )
@@ -90,7 +95,13 @@ export default function RegisterPage() {
                                 imageFileUrl
                                     ?
                                     <div className="flex flex-col justify-center items-center">
-                                        <img src={imageFileUrl || currentUser.profilePicture} alt="avatar" className='rounded-full w-[200px] h-[200px] border-8 object-cover' />
+                                        <img
+                                            src={imageFileUrl || currentUser.profilePicture}
+                                            alt="avatar"
+                                            className={`
+                                                rounded-full w-[200px] h-[200px] border-8 object-cover 
+                                                ${avatarLoading ? 'opacity-50' : 'opacity-100'}
+                                            `} />
                                     </div>
                                     :
                                     <div className="h-14 bg-slate-200 flex justify-center items-center border hover:border-primary">
@@ -141,7 +152,7 @@ export default function RegisterPage() {
                     <button className='bg-primary text-white text-lg py-1 hover:bg-secondary rounded mt-3 tracking-wide'>
                         Sign Up
                     </button>
-                    <p>Already have account ? <Link to={'/signIn'} >Login</Link></p>
+                    <p>Already have account ? <Link to={'/sign_in'} className='text-secondary hover:text-primary hover:underline font-medium' >Login</Link></p>
                 </form>
             </div>
         </div>

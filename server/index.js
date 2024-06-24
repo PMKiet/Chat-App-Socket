@@ -30,6 +30,16 @@ app.use(cookieParser())
 app.use('/api/auth', authRouter)
 app.use('/api/user/', userRouter)
 
+app.use((err, req, res, next) => {
+    const statuscode = err.statuscode || 500
+    const message = err.message || 'Internal server Error'
+    res.status(statuscode).json({
+        success: false,
+        statuscode,
+        message
+    })
+})
+
 const PORT = process.env.PORT || 8000
 
 app.get('/', (req, res) => {
