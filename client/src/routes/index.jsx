@@ -20,7 +20,7 @@ const router = createBrowserRouter([
                 element: <AuthLayout> <SignInPage /> </AuthLayout>
             },
             {
-                path: '/home',
+                path: '',
                 element: <HomePage />,
                 children: [
                     {
