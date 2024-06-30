@@ -40,8 +40,8 @@ const userSlice = createSlice({
             state.loading = true
             state.error = null
         },
-        deleteUserSuccess: (state) => {
-            state.currentUser = null
+        deleteUserSuccess: (state, action) => {
+            state.currentUser = action.payload
             state.loading = false
             state.error = null
         },
