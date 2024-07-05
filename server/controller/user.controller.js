@@ -16,16 +16,16 @@ export const userDetail = async (req, res, next) => {
 }
 
 export const updateUser = async (req, res, next) => {
-    if (req.user.id !== req.params.userId) {
-        return next(errorHandler(403, 'You are not allowed to update user'))
-    }
-    if (req.body?.username.length < 7 || req.body?.username.length > 20) {
-        return next(errorHandler(400, 'Name must be between 7 to 20 characters'))
-    }
-    if (!req.body.username.match(/^[a-zA-Z0-9]+$/)) {
-        return next(errorHandler(400, 'Name must be contain characters and numbers'))
-    }
     try {
+        if (req.user.id !== req.params.userId) {
+            next(errorHandler(403, 'You are not allowed to update user'))
+        }
+        if (req.body?.username.length < 7 || req.body?.username.length > 20) {
+            next(errorHandler(400, 'Name must be between 7 to 20 characters'))
+        }
+        if (!req.body.username.match(/^[a-zA-Z0-9]+$/)) {
+            next(errorHandler(400, 'Name must be contain characters and numbers'))
+        }
         const updateUser = await User.findByIdAndUpdate(req.params.userId, {
             $set: {
                 username: req.body.username,
@@ -48,3 +48,25 @@ export const logoutUser = async (req, res, next) => {
         next(error)
     }
 }
+
+export const searchUser = async (req, res, next) => {
+    const { search } = req.body
+    try {
+        console.log(search)
+        const query = new RegExp(search, 'i', 'g')
+
+        const userBySearch = await User.find({
+            '$or': [
+                { username: query },
+                { email: query }
+            ]
+        })
+
+        return res.status(200).json({
+            data: userBySearch,
+            success: true
+        })
+    } catch (error) {
+        return next(error)
+    }
+} 

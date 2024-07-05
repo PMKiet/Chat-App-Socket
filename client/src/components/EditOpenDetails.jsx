@@ -5,6 +5,7 @@ import { toast } from 'react-toastify'
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage'
 import { useSelector, useDispatch } from "react-redux"
 import { updateStart, updateSuccess, updateFailure } from '../redux/user.js'
+import Driver from './Driver.jsx'
 
 export default function EditOpenDetails({ onClose }) {
     const navigate = useNavigate()
@@ -37,8 +38,7 @@ export default function EditOpenDetails({ onClose }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        console.log('formData', formData.username)
-
+        e.stopPropagation()
         try {
             dispatch(updateStart())
             const res = await fetch(`/api/user/updateUser/${currentUser._id}`, {
@@ -47,6 +47,7 @@ export default function EditOpenDetails({ onClose }) {
                 body: JSON.stringify(formData)
             })
             const data = await res.json()
+            console.log(data);
             if (res.ok) {
                 dispatch(updateSuccess(data))
                 onClose()
@@ -93,7 +94,7 @@ export default function EditOpenDetails({ onClose }) {
                 <h2 className='font-semibold'>Profile Details</h2>
                 <p className='text-xm'>Edit user details</p>
 
-                <form >
+                <form className='grid gap-3 mt-3' >
                     <div>
                         <div className='flex flex-col gap-1'>
                             <label htmlFor="profilePicture">Avatar:
@@ -117,15 +118,22 @@ export default function EditOpenDetails({ onClose }) {
                                 onChange={(e) => handleChangeImage(e)}
                             />
                         </div>
-                        <label htmlFor="username">Name</label>
-                        <input
-                            type="text"
-                            name='username'
-                            id='username'
-                            onChange={(e) => handleOnchange(e)}
-                        />
+                        <div className="flex flex-col gap-1">
+                            <label htmlFor="username">Name:</label>
+                            <input
+                                type="text"
+                                name='username'
+                                defaultValue={currentUser?.username}
+                                id='username'
+                                onChange={handleOnchange}
+                            />
+                        </div>
                     </div>
-                    <button onClick={(e) => handleSubmit(e)}>Update</button>
+                    <Driver />
+                    <div className="flex gap-2 w-fit ml-auto">
+                        <button onClick={onClose} className='border-primary border text-primary px-4 py-1 rounded hover:text-white hover:bg-secondary'>Cancel</button>
+                        <button onClick={(e) => handleSubmit(e)} className='border-primary border bg-primary px-4 py-1 rounded text-white hover:bg-secondary'>Save</button>
+                    </div>
                 </form>
             </div>
         </div>
