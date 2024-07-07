@@ -6,6 +6,7 @@ import authRouter from './router/auth.router.js'
 import userRouter from './router/user.router.js'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
+import { app, server } from './socket/index.js'
 
 dotenv.config()
 
@@ -17,7 +18,7 @@ mongoose.connect(process.env.MONGODB)
     })
 
 
-const app = express()
+// const app = express()
 
 app.use(cors())
 // parse application/x-www-form-urlencoded
@@ -48,6 +49,6 @@ app.get('/', (req, res) => {
     })
 })
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log('Server is running on Port ' + PORT)
 })

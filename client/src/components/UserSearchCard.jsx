@@ -1,9 +1,8 @@
 import React from 'react'
 import Avatar from './Avatar'
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
 
 export default function UserSearchCard({ user, onClose }) {
-    console.log(user.profilePicture);
     return (
         <Link to={`/${user._id}`} onClick={onClose} className='flex items-center gap-3 p-2 border border-s-transparent border-b-slate-200 hover:border hover:border-primary rounded cursor-pointer'>
             <div>
